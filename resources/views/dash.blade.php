@@ -136,6 +136,12 @@
             color: #666;
         }
 
+        .task-list li .task-description {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+        }
+
         .task-list li .task-actions {
             display: flex;
             gap: 10px;
@@ -179,23 +185,203 @@
             background-color: rgb(19, 19, 19);
         }
 
-        /* Styling for the selected task count */
-        .selected-task-count {
+        /* Styling for the buttons container */
+        .buttons-container {
             position: fixed;
             bottom: 20px;
             left: 85px; /* Adjust to match the sidebar width */
+            right: 20px; /* Add right padding */
+            display: none; /* Hide by default */
+            justify-content: space-between; /* Space between left and right buttons */
+            align-items: center;
+        }
+
+        .buttons-container .left-buttons {
+            display: flex;
+            gap: 10px; /* Space between buttons on the left */
+        }
+
+        .buttons-container .right-buttons {
+            display: flex;
+            gap: 10px; /* Space between buttons on the right */
+        }
+
+        .buttons-container button {
             background-color: black;
             color: white;
+            border: none;
             padding: 10px 20px;
             border-radius: 5px;
+            cursor: pointer;
             font-size: 16px;
-            z-index: 1000;
-            display: none; /* Hide by default */
+        }
+
+        .buttons-container button:hover {
+            background-color: rgb(46, 46, 46);
         }
 
         /* Adjust position when sidebar is open */
-        .sidebar.open ~ .content .selected-task-count {
+        .sidebar.open ~ .content .buttons-container {
             left: 270px; /* Adjust to match the expanded sidebar width */
+        }
+
+        /* Styling for the modal */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            z-index: 1001; /* Ensure it appears above other content */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.open {
+            display: flex; /* Show the modal */
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .modal-content input,
+        .modal-content textarea {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .modal-content textarea {
+            resize: vertical; /* Allow vertical resizing */
+        }
+
+        .modal-content button {
+            width: 100%;
+            padding: 10px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .modal-content button:hover {
+            background-color: rgb(46, 46, 46);
+        }
+        .modal-content .close-button {
+            width: 50px;
+            position: right;
+            top: 20px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-content .close-button:hover {
+            color: #333;
+        }.edit-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            z-index: 1001; /* Ensure it appears above other content */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .edit-modal.open {
+            display: flex; /* Show the modal */
+        }
+
+        .edit-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .edit-modal-content h2 {
+            margin-top: 0;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .edit-modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .edit-modal-content input,
+        .edit-modal-content textarea {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .edit-modal-content textarea {
+            resize: vertical; /* Allow vertical resizing */
+        }
+
+        .edit-modal-content button {
+            width: 100%;
+            padding: 10px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .edit-modal-content button:hover {
+            background-color: rgb(46, 46, 46);
+        }
+
+        .edit-modal-content .close-button {
+            width: 50px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .edit-modal-content .close-button:hover {
+            color: #333;
         }
     </style>
 </head>
@@ -214,10 +400,6 @@
             <i class="fas fa-tasks"></i> <!-- Tasks Icon -->
             <span>Tasks</span> <!-- Tasks Text -->
         </a>
-        <a href="#" onclick="loadSection('settings')">
-            <i class="fas fa-cog"></i> <!-- Settings Icon -->
-            <span>Settings</span> <!-- Settings Text -->
-        </a>
         <a href="#" onclick="loadSection('logout')">
             <i class="fas fa-sign-out-alt"></i> <!-- Logout Icon -->
             <span>Logout</span> <!-- Logout Text -->
@@ -226,11 +408,61 @@
 
     <!-- Content Section -->
     <div class="content" id="content">
-        <p>Welcome to the Todo App dashboard. Here you can manage your tasks.</p>
+        <!-- Default content will be replaced by the Tasks section -->
     </div>
 
-    <!-- Selected Task Count -->
-    <div class="selected-task-count" id="selected-task-count">0 tasks selected</div>
+    <!-- Buttons Container -->
+    <div class="buttons-container" id="buttons-container">
+        <div class="left-buttons">
+            <button id="task-count-button">0 tasks selected</button>
+        </div>
+        <div class="right-buttons">
+            <button onclick="completeSelectedTasks()">Complete</button>
+            <button onclick="deleteSelectedTasks()">Delete</button>
+        </div>
+    </div>
+
+    <!-- Modal for adding a task -->
+    <div class="modal" id="add-task-modal">
+        <div class="modal-content">
+            <!-- Close Button -->
+            <button class="close-button" onclick="closeAddTaskModal()">&times;</button>
+            <h2>Add Your Task</h2>
+            <form id="add-task-form">
+                <label for="task-name">Task Name</label>
+                <input type="text" id="task-name" placeholder="Enter task name" required>
+                
+                <label for="task-description">Task Description</label>
+                <textarea id="task-description" placeholder="Enter task description" rows="3"></textarea>
+                
+                <label for="task-date">Task Date</label>
+                <input type="date" id="task-date" required>
+                
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for editing a task -->
+    <div class="edit-modal" id="edit-task-modal">
+        <div class="edit-modal-content">
+            <!-- Close Button -->
+            <button class="close-button" onclick="closeEditTaskModal()">&times;</button>
+            <h2>Edit Task</h2>
+            <form id="edit-task-form">
+                <label for="edit-task-name">Task Name</label>
+                <input type="text" id="edit-task-name" placeholder="Enter task name" required>
+                
+                <label for="edit-task-description">Task Description</label>
+                <textarea id="edit-task-description" placeholder="Enter task description" rows="3"></textarea>
+                
+                <label for="edit-task-date">Task Date</label>
+                <input type="date" id="edit-task-date" required>
+                
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
 
     <script>
         // Function to open the sidebar
@@ -248,48 +480,49 @@
         // Function to generate dummy task data
         function getDummyTasks() {
             return [
-                { name: "Draft Project Proposal", date: "Tue Oct 17 2023" },
-                { name: "Take Trash Out", date: "Wed Oct 18 2023" },
-                { name: "Get Groceries", date: "Wed Oct 18 2023" },
-                { name: "Get Groceries", date: "Wed Oct 20 2023" },
-                { name: "Send Mail", date: "Wed Oct 18 2023" }
+                { name: "Draft Project Proposal", description: "Prepare the initial draft for the project proposal.", date: "Tue Oct 17 2023" },
+                { name: "Take Trash Out", description: "Take out the trash before 8 PM.", date: "Wed Oct 18 2023" },
+                { name: "Get Groceries", description: "Buy milk, eggs, and bread.", date: "Wed Oct 18 2023" },
+                { name: "Send Mail", description: "Send the quarterly report to the manager.", date: "Wed Oct 18 2023" }
             ];
         }
 
         // Function to update the selected task count
         function updateSelectedTaskCount() {
             const selectedTasks = document.querySelectorAll(".task-list input[type='checkbox']:checked").length;
-            const selectedTaskCount = document.getElementById("selected-task-count");
-            selectedTaskCount.textContent = `${selectedTasks} tasks selected`;
+            const taskCountButton = document.getElementById("task-count-button");
+            taskCountButton.textContent = `${selectedTasks} tasks selected`;
         }
 
         // Function to load sections dynamically
         function loadSection(section) {
             const content = document.getElementById("content");
-            const selectedTaskCount = document.getElementById("selected-task-count");
+            const buttonsContainer = document.getElementById("buttons-container");
 
             // Clear existing content
             content.innerHTML = "";
 
-            // Show or hide the selected task count based on the section
+            // Show or hide the buttons container based on the section
             if (section === "tasks") {
-                selectedTaskCount.style.display = "block"; // Show the count
+                buttonsContainer.style.display = "flex"; // Show the buttons
             } else {
-                selectedTaskCount.style.display = "none"; // Hide the count
+                buttonsContainer.style.display = "none"; // Hide the buttons
             }
 
             // Load new content based on the section
             switch (section) {
                 case "tasks":
                     const tasks = getDummyTasks(); // Get dummy tasks
-                    const taskListHTML = tasks.map(task => `
+                    const taskListHTML = tasks.map((task, index) => `
                         <li>
                             <div>
                                 <input type="checkbox" onchange="updateSelectedTaskCount()">
                                 <span>${task.name}</span>
+                                <div class="task-description">${task.description}</div>
                                 <div class="task-date">${task.date}</div>
                             </div>
                             <div class="task-actions">
+                                <button onclick="openEditTaskModal(${index})"><i class="fas fa-edit"></i></button>
                                 <button><i class="fas fa-trash"></i></button>
                             </div>
                         </li>
@@ -298,16 +531,13 @@
                     content.innerHTML = `
                         <div class="tasks-header">
                             <h2>Tasks</h2>
-                            <button onclick="addTask()">Add Task</button>
+                            <button onclick="openAddTaskModal()">Add Task</button>
                         </div>
                         <ul class="task-list">
                             ${taskListHTML}
                         </ul>
                     `;
                     updateSelectedTaskCount(); // Initialize the selected task count
-                    break;
-                case "settings":
-                    content.innerHTML = "<h2>Settings</h2><p>This is the Settings section. Here you can configure your preferences.</p>";
                     break;
                 case "logout":
                     content.innerHTML = "<h2>Logout</h2><p>You have been logged out. Redirecting to the login page...</p>";
@@ -317,15 +547,131 @@
                     }, 2000);
                     break;
                 default:
-                    content.innerHTML = "<p>Welcome to the Todo App dashboard. Here you can manage your tasks.</p>";
+                    // Default to the Tasks section
+                    loadSection("tasks");
                     break;
             }
         }
 
-        // Function to handle the "Add Task" button click
-        function addTask() {
-            alert("Add Task button clicked!"); // Replace with your logic to add a task
+        // Function to open the add task modal
+        function openAddTaskModal() {
+            const modal = document.getElementById("add-task-modal");
+            modal.classList.add("open");
         }
+
+        // Function to close the add task modal
+        function closeAddTaskModal() {
+            const modal = document.getElementById("add-task-modal");
+            modal.classList.remove("open");
+        }
+
+        // Function to open the edit task modal
+        function openEditTaskModal(index) {
+            const tasks = getDummyTasks();
+            const task = tasks[index];
+
+            // Fill the edit modal with task details
+            document.getElementById("edit-task-name").value = task.name;
+            document.getElementById("edit-task-description").value = task.description;
+            document.getElementById("edit-task-date").value = task.date;
+
+            // Open the edit modal
+            const modal = document.getElementById("edit-task-modal");
+            modal.classList.add("open");
+
+            // Save the task index for updating later
+            modal.dataset.taskIndex = index;
+        }
+
+        // Function to close the edit task modal
+        function closeEditTaskModal() {
+            const modal = document.getElementById("edit-task-modal");
+            modal.classList.remove("open");
+        }
+
+        // Function to handle the form submission for adding a task
+        document.getElementById("add-task-form").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent the form from submitting
+
+            // Get the task name, description, and date from the form
+            const taskName = document.getElementById("task-name").value;
+            const taskDescription = document.getElementById("task-description").value;
+            const taskDate = document.getElementById("task-date").value;
+
+            // Add the new task to the task list
+            const taskList = document.querySelector(".task-list");
+            const newTaskHTML = `
+                <li>
+                    <div>
+                        <input type="checkbox" onchange="updateSelectedTaskCount()">
+                        <span>${taskName}</span>
+                        <div class="task-description">${taskDescription}</div>
+                        <div class="task-date">${taskDate}</div>
+                    </div>
+                    <div class="task-actions">
+                        <button onclick="openEditTaskModal(${getDummyTasks().length})"><i class="fas fa-edit"></i></button>
+                        <button><i class="fas fa-trash"></i></button>
+                    </div>
+                </li>
+            `;
+            taskList.insertAdjacentHTML("beforeend", newTaskHTML);
+
+            // Close the modal
+            closeAddTaskModal();
+
+            // Clear the form fields
+            document.getElementById("task-name").value = "";
+            document.getElementById("task-description").value = "";
+            document.getElementById("task-date").value = "";
+        });
+
+        // Function to handle the form submission for editing a task
+        document.getElementById("edit-task-form").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent the form from submitting
+
+            // Get the updated task details from the form
+            const taskName = document.getElementById("edit-task-name").value;
+            const taskDescription = document.getElementById("edit-task-description").value;
+            const taskDate = document.getElementById("edit-task-date").value;
+
+            // Get the task index from the modal dataset
+            const taskIndex = document.getElementById("edit-task-modal").dataset.taskIndex;
+
+            // Update the task in the task list
+            const taskList = document.querySelectorAll(".task-list li");
+            const taskItem = taskList[taskIndex];
+
+            taskItem.querySelector("span").textContent = taskName;
+            taskItem.querySelector(".task-description").textContent = taskDescription;
+            taskItem.querySelector(".task-date").textContent = taskDate;
+
+            // Close the edit modal
+            closeEditTaskModal();
+        });
+
+        // Function to handle the "Complete" button click
+        function completeSelectedTasks() {
+            const selectedCheckboxes = document.querySelectorAll(".task-list input[type='checkbox']:checked");
+            selectedCheckboxes.forEach(checkbox => {
+                const taskItem = checkbox.closest("li");
+                taskItem.classList.add("completed"); // Mark as completed
+            });
+        }
+
+        // Function to handle the "Delete" button click
+        function deleteSelectedTasks() {
+            const selectedCheckboxes = document.querySelectorAll(".task-list input[type='checkbox']:checked");
+            selectedCheckboxes.forEach(checkbox => {
+                const taskItem = checkbox.closest("li");
+                taskItem.remove(); // Remove the task
+            });
+            updateSelectedTaskCount(); // Update the count after deleting tasks
+        }
+
+        // Load the Tasks section by default when the page loads
+        window.onload = function () {
+            loadSection("tasks");
+        };
     </script>
 </body>
 </html>

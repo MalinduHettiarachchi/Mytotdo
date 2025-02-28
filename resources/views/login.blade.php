@@ -3,96 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>Login & Register</title>
     <style>
-        body {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        }
+
+        body {
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
+            background:rgb(0, 0, 0);
         }
-        .topic {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 40px;
-            color: #333;
-            margin-top: -10px;
 
-        }
-        .login-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
-        }
-        .login-container h1 {
+        .topic {
+            font-size: 3rem;
+            font-weight: bold;
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 2rem;
-            
+            margin-top: 20px; /* Adjust top margin as needed */
+            position: absolute;
+            top: 20px;
+            color: white;
         }
-        .login-container label {
-            display: block;
-            margin-bottom: 5px;
+
+        .form-box {
+            width: 350px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-box {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            background: #ddd;
+            border-radius: 30px;
+            position: relative;
+        }
+
+        .tog-b {
+            width: 50%;
+            padding: 10px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
             font-weight: bold;
         }
-        .login-container input[type="email"],
-        .login-container input[type="password"]{
-            width: 90%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
+
+        #btn {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            background: black;
+            border-radius: 30px;
+            transition: 0.5s;
         }
-        .login-container select {
-            width: 98%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
+
+        .tog-b:nth-child(1) {
+            color: white;
         }
-        .login-container button {
+
+        .input-group {
+            display: none;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        .input-group.active {
+            display: flex;
+        }
+
+        .infield {
             width: 100%;
             padding: 10px;
-            background-color: #28a745;
-            border: none;
-            border-radius: 4px;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
-        .login-container button:hover {
-            background-color: #218838;
+
+        .chekbox {
+            margin-right: 5px;
+        }
+
+        .subutn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: black;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .role-select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: white;
+            color: black;
         }
     </style>
 </head>
-<body>
-    <h1 class="topic">Mytodo</h1>
-    <div class="login-container">
-        <h1>Login</h1>
-        <form action="/login" method="POST">
-            <label for="role">User Role</label>
-            <select id="role" name="role" required>
-                <option value="admin">Admin</option>
-                <option value="user">User</option>
-                <option value="guest">Guest</option>
+<body> 
+    <div class="topic">MyTodo</div>
+
+    <div class="form-box">
+        <div class="button-box">
+            <div id="btn"></div>
+            <button type="button" class="tog-b" onclick="showLogin()">Log In</button>
+            <button type="button" class="tog-b" onclick="showRegister()">Register</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="input-group active" action="login.php" method="POST">
+            <input type="email" class="infield" placeholder="Email" name="email" required>
+            <input type="password" class="infield" placeholder="Enter Password" name="password" required>
+            <select class="role-select" name="role" required>
+                <option value="" disabled selected>Select Role</option>
+                <option value="Admin">Admin</option>
+                <option value="User">User</option>
             </select>
+            <button type="submit" class="subutn">Log In</button> 
+        </form>
 
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
-
-            <button type="submit">Login</button>
+        <!-- Register Form -->
+        <form id="registerForm" class="input-group" action="insert.php" method="POST">
+            <input type="text" class="infield" placeholder="Name" name="name" required>
+            <input type="text" class="infield" placeholder="Phone No" name="phone" required>
+            <input type="email" class="infield" placeholder="Email" name="email" required>
+            <input type="password" class="infield" placeholder="Enter Password" name="password" required>
+            <select class="role-select" name="role" required>
+                <option value="" disabled selected>Select Role</option>
+                <option value="Admin">Admin</option>
+                <option value="User">User</option>
+            </select>
+            <button type="submit" class="subutn">Register</button> 
         </form>
     </div>
+
+    <script>
+        function showLogin() {
+            document.getElementById("loginForm").classList.add("active");
+            document.getElementById("registerForm").classList.remove("active");
+            document.getElementById("btn").style.transform = "translateX(0)";
+        }
+
+        function showRegister() {
+            document.getElementById("loginForm").classList.remove("active");
+            document.getElementById("registerForm").classList.add("active");
+            document.getElementById("btn").style.transform = "translateX(100%)";
+        }
+    </script>
+
 </body>
 </html>

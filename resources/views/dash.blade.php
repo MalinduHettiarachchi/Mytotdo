@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}"> 
     <title>MyTodo</title>
     <!-- Add Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -385,6 +386,8 @@
         }
     </style>
 </head>
+
+
 <body>
     <!-- Black line (nav bar) with hamburger menu and text -->
     <div class="nav-bar">
@@ -417,7 +420,6 @@
             <button id="task-count-button">0 tasks selected</button>
         </div>
         <div class="right-buttons">
-            <button onclick="completeSelectedTasks()">Complete</button>
             <button onclick="deleteSelectedTasks()">Delete</button>
         </div>
     </div>
@@ -428,16 +430,17 @@
             <!-- Close Button -->
             <button class="close-button" onclick="closeAddTaskModal()">&times;</button>
             <h2>Add Your Task</h2>
-            <form id="add-task-form">
+            <form id="add-task-form" method="POST" action="/savetask">
+                @csrf
                 <label for="task-name">Task Name</label>
-                <input type="text" id="task-name" placeholder="Enter task name" required>
-                
+                <input type="text" id="taskname" name="taskname" placeholder="Enter task name" required>
+
                 <label for="task-description">Task Description</label>
-                <textarea id="task-description" placeholder="Enter task description" rows="3"></textarea>
-                
+                <textarea id="taskdes" name="taskdes" placeholder="Enter task description" rows="3"></textarea>
+
                 <label for="task-date">Task Date</label>
-                <input type="date" id="task-date" required>
-                
+                <input type="date" id="taskdate" name="taskdate" required>
+
                 <button type="submit">Add Task</button>
             </form>
         </div>
@@ -450,21 +453,25 @@
             <button class="close-button" onclick="closeEditTaskModal()">&times;</button>
             <h2>Edit Task</h2>
             <form id="edit-task-form">
+                <input type="hidden" id="edit-task-id">
                 <label for="edit-task-name">Task Name</label>
                 <input type="text" id="edit-task-name" placeholder="Enter task name" required>
-                
+
                 <label for="edit-task-description">Task Description</label>
                 <textarea id="edit-task-description" placeholder="Enter task description" rows="3"></textarea>
-                
+
                 <label for="edit-task-date">Task Date</label>
                 <input type="date" id="edit-task-date" required>
-                
+
                 <button type="submit">Save Changes</button>
             </form>
         </div>
     </div>
 
     <script>
+        // Pass the tasks data from PHP to JavaScript
+        const tasksFromDatabase = @json($tasks);
+
         // Function to open the sidebar
         function openSidebar() {
             const sidebar = document.getElementById("sidebar");
@@ -475,16 +482,6 @@
         function closeSidebar() {
             const sidebar = document.getElementById("sidebar");
             sidebar.classList.remove("open");
-        }
-
-        // Function to generate dummy task data
-        function getDummyTasks() {
-            return [
-                { name: "Draft Project Proposal", description: "Prepare the initial draft for the project proposal.", date: "Tue Oct 17 2023" },
-                { name: "Take Trash Out", description: "Take out the trash before 8 PM.", date: "Wed Oct 18 2023" },
-                { name: "Get Groceries", description: "Buy milk, eggs, and bread.", date: "Wed Oct 18 2023" },
-                { name: "Send Mail", description: "Send the quarterly report to the manager.", date: "Wed Oct 18 2023" }
-            ];
         }
 
         // Function to update the selected task count
@@ -512,18 +509,18 @@
             // Load new content based on the section
             switch (section) {
                 case "tasks":
-                    const tasks = getDummyTasks(); // Get dummy tasks
+                    const tasks = tasksFromDatabase; // Use tasks from the database
                     const taskListHTML = tasks.map((task, index) => `
                         <li>
                             <div>
                                 <input type="checkbox" onchange="updateSelectedTaskCount()">
-                                <span>${task.name}</span>
-                                <div class="task-description">${task.description}</div>
-                                <div class="task-date">${task.date}</div>
+                                <span>${task.task_name}</span>
+                                <div class="task-description">${task.task_description}</div>
+                                <div class="task-date">${task.task_date}</div>
                             </div>
                             <div class="task-actions">
-                                <button onclick="openEditTaskModal(${index})"><i class="fas fa-edit"></i></button>
-                                <button><i class="fas fa-trash"></i></button>
+                                <button onclick="openEditTaskModal(${task.id})"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteTask(${task.id})"><i class="fas fa-trash"></i></button>
                             </div>
                         </li>
                     `).join("");
@@ -566,21 +563,18 @@
         }
 
         // Function to open the edit task modal
-        function openEditTaskModal(index) {
-            const tasks = getDummyTasks();
-            const task = tasks[index];
+        function openEditTaskModal(taskId) {
+            const task = tasksFromDatabase.find(task => task.id === taskId);
 
             // Fill the edit modal with task details
-            document.getElementById("edit-task-name").value = task.name;
-            document.getElementById("edit-task-description").value = task.description;
-            document.getElementById("edit-task-date").value = task.date;
+            document.getElementById("edit-task-id").value = task.id;
+            document.getElementById("edit-task-name").value = task.task_name;
+            document.getElementById("edit-task-description").value = task.task_description;
+            document.getElementById("edit-task-date").value = task.task_date;
 
             // Open the edit modal
             const modal = document.getElementById("edit-task-modal");
             modal.classList.add("open");
-
-            // Save the task index for updating later
-            modal.dataset.taskIndex = index;
         }
 
         // Function to close the edit task modal
@@ -591,38 +585,42 @@
 
         // Function to handle the form submission for adding a task
         document.getElementById("add-task-form").addEventListener("submit", function (event) {
-            event.preventDefault(); // Prevent the form from submitting
+            event.preventDefault(); // Prevent the form from submitting naturally
 
-            // Get the task name, description, and date from the form
-            const taskName = document.getElementById("task-name").value;
-            const taskDescription = document.getElementById("task-description").value;
-            const taskDate = document.getElementById("task-date").value;
+            // Get the form data
+            const formData = new FormData(this);
 
-            // Add the new task to the task list
-            const taskList = document.querySelector(".task-list");
-            const newTaskHTML = `
-                <li>
-                    <div>
-                        <input type="checkbox" onchange="updateSelectedTaskCount()">
-                        <span>${taskName}</span>
-                        <div class="task-description">${taskDescription}</div>
-                        <div class="task-date">${taskDate}</div>
-                    </div>
-                    <div class="task-actions">
-                        <button onclick="openEditTaskModal(${getDummyTasks().length})"><i class="fas fa-edit"></i></button>
-                        <button><i class="fas fa-trash"></i></button>
-                    </div>
-                </li>
-            `;
-            taskList.insertAdjacentHTML("beforeend", newTaskHTML);
+            // Send the form data to the server using Fetch API
+            fetch("/savetask", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Close the modal
+                        closeAddTaskModal();
 
-            // Close the modal
-            closeAddTaskModal();
+                        // Clear the form fields
+                        document.getElementById("add-task-form").reset();
 
-            // Clear the form fields
-            document.getElementById("task-name").value = "";
-            document.getElementById("task-description").value = "";
-            document.getElementById("task-date").value = "";
+                        // Reload the tasks section to reflect the new task
+                        loadSection("tasks");
+
+                        // Optionally, show a success message
+                        alert("Task added successfully!");
+                    } else {
+                        // Handle errors
+                        alert("Failed to add task: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("An error occurred while adding the task. Check the console for details.");
+                });
         });
 
         // Function to handle the form submission for editing a task
@@ -630,42 +628,111 @@
             event.preventDefault(); // Prevent the form from submitting
 
             // Get the updated task details from the form
+            const taskId = document.getElementById("edit-task-id").value;
             const taskName = document.getElementById("edit-task-name").value;
             const taskDescription = document.getElementById("edit-task-description").value;
             const taskDate = document.getElementById("edit-task-date").value;
 
-            // Get the task index from the modal dataset
-            const taskIndex = document.getElementById("edit-task-modal").dataset.taskIndex;
-
-            // Update the task in the task list
-            const taskList = document.querySelectorAll(".task-list li");
-            const taskItem = taskList[taskIndex];
-
-            taskItem.querySelector("span").textContent = taskName;
-            taskItem.querySelector(".task-description").textContent = taskDescription;
-            taskItem.querySelector(".task-date").textContent = taskDate;
+            // Send the updated task data to the server
+            fetch(`/tasks/${taskId}`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    task_name: taskName,
+                    task_description: taskDescription,
+                    task_date: taskDate
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Task updated successfully!");
+                        // Reload the tasks section to reflect the changes
+                        loadSection("tasks");
+                    } else {
+                        alert("Failed to update task: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("An error occurred while updating the task.");
+                });
 
             // Close the edit modal
             closeEditTaskModal();
         });
 
-        // Function to handle the "Complete" button click
-        function completeSelectedTasks() {
-            const selectedCheckboxes = document.querySelectorAll(".task-list input[type='checkbox']:checked");
-            selectedCheckboxes.forEach(checkbox => {
-                const taskItem = checkbox.closest("li");
-                taskItem.classList.add("completed"); // Mark as completed
-            });
+        // Function to delete a single task
+        function deleteTask(taskId) {
+            if (confirm("Are you sure you want to delete this task?")) {
+                // Send a DELETE request to the server
+                fetch(`/tasks/${taskId}`, {
+                    method: "DELETE",
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Task deleted successfully!");
+                            // Reload the tasks section to reflect the changes
+                            loadSection("tasks");
+                        } else {
+                            alert("Failed to delete task: " + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("An error occurred while deleting the task.");
+                    });
+            }
         }
 
-        // Function to handle the "Delete" button click
+        // Function to delete selected tasks
         function deleteSelectedTasks() {
+            // Get the selected task checkboxes
             const selectedCheckboxes = document.querySelectorAll(".task-list input[type='checkbox']:checked");
-            selectedCheckboxes.forEach(checkbox => {
+
+            // Extract the task IDs from the selected checkboxes
+            const taskIds = Array.from(selectedCheckboxes).map(checkbox => {
                 const taskItem = checkbox.closest("li");
-                taskItem.remove(); // Remove the task
+                return taskItem.querySelector(".task-actions button[onclick^='deleteTask']").getAttribute("onclick").match(/\d+/)[0];
             });
-            updateSelectedTaskCount(); // Update the count after deleting tasks
+
+            if (taskIds.length === 0) {
+                alert("No tasks selected!");
+                return;
+            }
+
+            if (confirm("Are you sure you want to delete the selected tasks?")) {
+                // Send a DELETE request to the server
+                fetch('/tasks', {
+                    method: "DELETE",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ taskIds })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Selected tasks deleted successfully!");
+                            // Reload the tasks section to reflect the changes
+                            loadSection("tasks");
+                        } else {
+                            alert("Failed to delete tasks: " + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("An error occurred while deleting the tasks.");
+                    });
+            }
         }
 
         // Load the Tasks section by default when the page loads
@@ -674,4 +741,5 @@
         };
     </script>
 </body>
+
 </html>

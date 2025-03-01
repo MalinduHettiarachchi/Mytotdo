@@ -117,6 +117,7 @@
         }
     </style>
 </head>
+
 <body> 
     <div class="topic">MyTodo</div>
 
@@ -133,8 +134,9 @@
             <input type="password" class="infield" placeholder="Enter Password" name="password" required>
             <select class="role-select" name="role" required>
                 <option value="" disabled selected>Select Role</option>
-                <option value="Admin">Admin</option>
-                <option value="User">User</option>
+                @foreach($roles as $role)
+                    <option value="{{ $role->id }}">{{ $role->role_name }}</option>
+                @endforeach
             </select>
             <button type="submit" class="subutn">Log In</button> 
         </form>
@@ -147,8 +149,9 @@
             <input type="password" class="infield" placeholder="Enter Password" name="password" required>
             <select class="role-select" name="role" required>
                 <option value="" disabled selected>Select Role</option>
-                <option value="Admin">Admin</option>
-                <option value="User">User</option>
+                @foreach($roles as $role)
+                    <option value="{{ $role->id }}">{{ $role->role_name }}</option>
+                @endforeach
             </select>
             <button type="submit" class="subutn">Register</button> 
         </form>

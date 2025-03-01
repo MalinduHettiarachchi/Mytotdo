@@ -1,16 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\RoleController;
 
-Route::get('/login', function () {
-    return view('login');
-});
+Route::get('/login', [RoleController::class, 'getRoles']);
+
 
 Route::get('/', function () {
     return view('dash');
 });
-
-use App\Http\Controllers\TaskController;
 
 Route::post('/savetask', [TaskController::class, 'savetask']);
 

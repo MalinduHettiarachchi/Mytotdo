@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}"> 
     <title>MyTodo</title>
     <!-- Add Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -428,18 +429,20 @@
             <!-- Close Button -->
             <button class="close-button" onclick="closeAddTaskModal()">&times;</button>
             <h2>Add Your Task</h2>
-            <form id="add-task-form">
-                <label for="task-name">Task Name</label>
-                <input type="text" id="task-name" placeholder="Enter task name" required>
-                
-                <label for="task-description">Task Description</label>
-                <textarea id="task-description" placeholder="Enter task description" rows="3"></textarea>
-                
-                <label for="task-date">Task Date</label>
-                <input type="date" id="task-date" required>
-                
-                <button type="submit">Add Task</button>
-            </form>
+            <form id="add-task-form" method="POST" action="/savetask">
+    @csrf
+    <label for="task-name">Task Name</label>
+    <input type="text" id="taskname" name="taskname" placeholder="Enter task name" required>
+
+    <label for="task-description">Task Description</label>
+    <textarea id="taskdes" name="taskdes" placeholder="Enter task description" rows="3"></textarea>
+
+    <label for="task-date">Task Date</label>
+    <input type="date" id="taskdate" name="taskdate" required>
+
+    <button type="submit">Add Task</button>
+</form>
+
         </div>
     </div>
 
@@ -591,41 +594,52 @@
 
         // Function to handle the form submission for adding a task
         document.getElementById("add-task-form").addEventListener("submit", function (event) {
-            event.preventDefault(); // Prevent the form from submitting
+    event.preventDefault(); // Prevent the form from submitting naturally
 
-            // Get the task name, description, and date from the form
-            const taskName = document.getElementById("task-name").value;
-            const taskDescription = document.getElementById("task-description").value;
-            const taskDate = document.getElementById("task-date").value;
+    // Get the form data
+    const formData = new FormData(this);
 
-            // Add the new task to the task list
-            const taskList = document.querySelector(".task-list");
-            const newTaskHTML = `
-                <li>
-                    <div>
-                        <input type="checkbox" onchange="updateSelectedTaskCount()">
-                        <span>${taskName}</span>
-                        <div class="task-description">${taskDescription}</div>
-                        <div class="task-date">${taskDate}</div>
-                    </div>
-                    <div class="task-actions">
-                        <button onclick="openEditTaskModal(${getDummyTasks().length})"><i class="fas fa-edit"></i></button>
-                        <button><i class="fas fa-trash"></i></button>
-                    </div>
-                </li>
-            `;
-            taskList.insertAdjacentHTML("beforeend", newTaskHTML);
-
+    // Send the form data to the server using Fetch API
+    fetch("/savetask", {
+        method: "POST",
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            // If the response is not OK, parse the error message
+            return response.text().then(text => {
+                throw new Error(text);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
             // Close the modal
             closeAddTaskModal();
 
             // Clear the form fields
-            document.getElementById("task-name").value = "";
-            document.getElementById("task-description").value = "";
-            document.getElementById("task-date").value = "";
-        });
+            document.getElementById("add-task-form").reset();
 
-        // Function to handle the form submission for editing a task
+            // Reload the tasks section to reflect the new task
+            loadSection("tasks");
+
+            // Optionally, show a success message
+            alert("Task added successfully!");
+        } else {
+            // Handle errors
+            alert("Failed to add task: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred while adding the task. Check the console for details.");
+    });
+});
+// Function to handle the form submission for editing a task
         document.getElementById("edit-task-form").addEventListener("submit", function (event) {
             event.preventDefault(); // Prevent the form from submitting
 

@@ -7,16 +7,9 @@ use App\Models\Role;
 
 class RoleController extends Controller
 {
-    public function showLoginForm()
+    public function getRoles()
     {
         $roles = Role::all(); // Fetch all roles from the roles table
-        return view('login', compact('roles'));
+        return view('login', compact('roles')); // Pass roles to the view
     }
-
-    public function showRegisterForm()
-    {
-        $roles = Role::all(); // Fetch all roles from the roles table
-        return view('register', compact('roles'));
-    }
-    
 }

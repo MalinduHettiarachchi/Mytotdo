@@ -165,7 +165,7 @@
     <script>
         function submitRegisterForm(event) {
             event.
-            preventDefault(); // Prevent the form from submitting normally
+                preventDefault(); // Prevent the form from submitting normally
 
             // Get the form data
             const form = event.target;

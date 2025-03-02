@@ -120,6 +120,7 @@
     </style>
 </head>
 
+
 <body>
     <div class="topic">MyTodo</div>
 
@@ -131,7 +132,8 @@
         </div>
 
         <!-- Login Form -->
-        <form id="loginForm" class="input-group active" action="{{ url('/login') }}" method="POST">
+        <form id="loginForm" class="input-group active" onsubmit="submitLoginForm(event)" action="{{ route('login') }}"
+            method="POST">
             @csrf
             <input type="email" class="infield" placeholder="Email" name="email" required>
             <input type="password" class="infield" placeholder="Enter Password" name="password" required>
@@ -163,9 +165,48 @@
     </div>
 
     <script>
+        // Function to handle login form submission
+        function submitLoginForm(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+
+            // Get the form data
+            const form = event.target;
+            const formData = new FormData(form);
+
+            // Send an AJAX request
+            fetch("{{ route('login') }}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include the CSRF token
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        // If the response is not OK, parse it as JSON to get the error message
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Login failed');
+                        });
+                    }
+                    return response.json(); // Parse the JSON response
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert("Login successful!"); // Display success message
+                        window.location.href = "/dash"; // Redirect to the dashboard
+                    } else {
+                        alert("Login failed: " + data.message); // Display error message
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error); // Log the error to the console
+                    alert("An error occurred. Please try again."); // Display generic error message
+                });
+        }
+        
+        // Function to handle registration form submission
         function submitRegisterForm(event) {
-            event.
-                preventDefault(); // Prevent the form from submitting normally
+            event.preventDefault(); // Prevent the form from submitting normally
 
             // Get the form data
             const form = event.target;
@@ -199,19 +240,20 @@
                 });
         }
 
+        // Function to show the login form
         function showLogin() {
             document.getElementById("loginForm").classList.add("active");
             document.getElementById("registerForm").classList.remove("active");
             document.getElementById("btn").style.transform = "translateX(0)";
         }
 
+        // Function to show the registration form
         function showRegister() {
             document.getElementById("loginForm").classList.remove("active");
             document.getElementById("registerForm").classList.add("active");
             document.getElementById("btn").style.transform = "translateX(100%)";
         }
     </script>
-
 </body>
 
 </html>

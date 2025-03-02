@@ -4,6 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
+
+// Route to handle login
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+
+// Route to handle logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/', [RoleController::class, 'getRoles']);
 

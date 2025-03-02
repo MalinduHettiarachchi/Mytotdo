@@ -3,18 +3,21 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 
-Route::get('/login', [RoleController::class, 'getRoles']);
+Route::get('/', [RoleController::class, 'getRoles']);
+
+Route::post('/regiuser', [UserController::class, 'userregistration']);
 
 
-Route::get('/', function () {
+Route::get('/dash', function () {
     return view('dash');
 });
 
 Route::post('/savetask', [TaskController::class, 'savetask']);
 
 // Route to display the dashboard
-Route::get('/', [TaskController::class, 'index']);
+Route::get('/dash', [TaskController::class, 'index']);
 
 // Route to save a task
 Route::post('/savetask', [TaskController::class, 'savetask']);

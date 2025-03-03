@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}"> 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>MyTodo</title>
     <!-- Add Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -11,23 +12,33 @@
         /* Styling for the black line (nav bar) */
         .nav-bar {
             width: 100%;
-            height: 80px; /* Height of the nav bar */
-            background-color: black; /* Color of the nav bar */
-            position: fixed; /* Fix the nav bar at the top */
+            height: 80px;
+            /* Height of the nav bar */
+            background-color: black;
+            /* Color of the nav bar */
+            position: fixed;
+            /* Fix the nav bar at the top */
             top: 0;
             left: 0;
-            z-index: 1000; /* Ensure it stays on top of other content */
+            z-index: 1000;
+            /* Ensure it stays on top of other content */
             display: flex;
-            align-items: center; /* Center items vertically */
-            padding: 0 20px; /* Add padding to left and right */
+            align-items: center;
+            /* Center items vertically */
+            padding: 0 20px;
+            /* Add padding to left and right */
         }
 
         /* Styling for the hamburger menu */
         .hamburger-menu {
-            color: white; /* Color of the menu icon */
-            font-size: 20px; /* Size of the menu icon */
-            cursor: pointer; /* Change cursor to pointer on hover */
-            margin-right: 20px; /* Add space between menu and text */
+            color: white;
+            /* Color of the menu icon */
+            font-size: 20px;
+            /* Size of the menu icon */
+            cursor: pointer;
+            /* Change cursor to pointer on hover */
+            margin-right: 20px;
+            /* Add space between menu and text */
         }
 
         /* Styling for the text inside the nav bar */
@@ -36,21 +47,31 @@
             margin: 0;
             font-size: 24px;
             font-family: Arial, sans-serif;
-            text-align: center; /* Center text horizontally */
-            flex: 1; /* Allow the text to take up remaining space */
+            text-align: center;
+            /* Center text horizontally */
+            flex: 1;
+            /* Allow the text to take up remaining space */
         }
 
         /* Styling for the sidebar */
         .sidebar {
-            width: 65px; /* Width of the sidebar when closed (icons only) */
-            height: 100vh; /* Full height of the viewport */
-            background-color: Black; /* Background color of the sidebar */
-            position: fixed; /* Fix the sidebar */
-            top: 80px; /* Adjusted to account for the nav bar */
+            width: 65px;
+            /* Width of the sidebar when closed (icons only) */
+            height: 100vh;
+            /* Full height of the viewport */
+            background-color: Black;
+            /* Background color of the sidebar */
+            position: fixed;
+            /* Fix the sidebar */
+            top: 80px;
+            /* Adjusted to account for the nav bar */
             left: 0;
-            transition: width 0.3s ease; /* Smooth transition for opening/closing */
-            z-index: 999; /* Ensure it stays below the nav bar */
-            overflow: hidden; /* Hide overflow text when sidebar is closed */
+            transition: width 0.3s ease;
+            /* Smooth transition for opening/closing */
+            z-index: 999;
+            /* Ensure it stays below the nav bar */
+            overflow: hidden;
+            /* Hide overflow text when sidebar is closed */
         }
 
         /* Styling for sidebar links */
@@ -58,23 +79,31 @@
             color: white;
             padding: 15px 20px;
             text-decoration: none;
-            display: flex; /* Use flexbox to align icon and text */
-            align-items: center; /* Center items vertically */
+            display: flex;
+            /* Use flexbox to align icon and text */
+            align-items: center;
+            /* Center items vertically */
             font-size: 18px;
-            border-bottom: 1px solid #444; /* Add a separator between links */
+            border-bottom: 1px solid #444;
+            /* Add a separator between links */
         }
 
         /* Styling for icons */
         .sidebar a i {
-            margin-right: 15px; /* Add space between icon and text */
-            min-width: 20px; /* Ensure icons stay in place */
+            margin-right: 15px;
+            /* Add space between icon and text */
+            min-width: 20px;
+            /* Ensure icons stay in place */
         }
 
         /* Styling for text in sidebar links */
         .sidebar a span {
-            white-space: nowrap; /* Prevent text from wrapping */
-            opacity: 0; /* Hide text by default */
-            transition: opacity 0.3s ease; /* Smooth transition for text visibility */
+            white-space: nowrap;
+            /* Prevent text from wrapping */
+            opacity: 0;
+            /* Hide text by default */
+            transition: opacity 0.3s ease;
+            /* Smooth transition for text visibility */
         }
 
         /* Hover effect for sidebar links */
@@ -85,29 +114,35 @@
         /* Optional: Add some padding to the body to prevent content from being hidden under the nav bar */
         body {
             margin: 0;
-            padding-top: 80px; /* Adjust this value to match the height of the nav bar */
+            padding-top: 80px;
+            /* Adjust this value to match the height of the nav bar */
         }
 
         /* Class to open the sidebar */
         .sidebar.open {
-            width: 250px; /* Expanded width of the sidebar */
+            width: 250px;
+            /* Expanded width of the sidebar */
         }
 
         /* Show text when sidebar is open */
         .sidebar.open a span {
-            opacity: 1; /* Show text */
+            opacity: 1;
+            /* Show text */
         }
 
         /* Styling for the content section */
         .content {
-            margin-left: 65px; /* Adjust to match the width of the closed sidebar */
+            margin-left: 65px;
+            /* Adjust to match the width of the closed sidebar */
             padding: 20px;
-            transition: margin-left 0.3s ease; /* Smooth transition for content area */
+            transition: margin-left 0.3s ease;
+            /* Smooth transition for content area */
         }
 
         /* Adjust content margin when sidebar is open */
-        .sidebar.open ~ .content {
-            margin-left: 250px; /* Adjust to match the width of the open sidebar */
+        .sidebar.open~.content {
+            margin-left: 250px;
+            /* Adjust to match the width of the open sidebar */
         }
 
         /* Styling for the task list */
@@ -190,21 +225,27 @@
         .buttons-container {
             position: fixed;
             bottom: 20px;
-            left: 85px; /* Adjust to match the sidebar width */
-            right: 20px; /* Add right padding */
-            display: none; /* Hide by default */
-            justify-content: space-between; /* Space between left and right buttons */
+            left: 85px;
+            /* Adjust to match the sidebar width */
+            right: 20px;
+            /* Add right padding */
+            display: none;
+            /* Hide by default */
+            justify-content: space-between;
+            /* Space between left and right buttons */
             align-items: center;
         }
 
         .buttons-container .left-buttons {
             display: flex;
-            gap: 10px; /* Space between buttons on the left */
+            gap: 10px;
+            /* Space between buttons on the left */
         }
 
         .buttons-container .right-buttons {
             display: flex;
-            gap: 10px; /* Space between buttons on the right */
+            gap: 10px;
+            /* Space between buttons on the right */
         }
 
         .buttons-container button {
@@ -222,26 +263,31 @@
         }
 
         /* Adjust position when sidebar is open */
-        .sidebar.open ~ .content .buttons-container {
-            left: 270px; /* Adjust to match the expanded sidebar width */
+        .sidebar.open~.content .buttons-container {
+            left: 270px;
+            /* Adjust to match the expanded sidebar width */
         }
 
         /* Styling for the modal */
         .modal {
-            display: none; /* Hidden by default */
+            display: none;
+            /* Hidden by default */
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-            z-index: 1001; /* Ensure it appears above other content */
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent background */
+            z-index: 1001;
+            /* Ensure it appears above other content */
             justify-content: center;
             align-items: center;
         }
 
         .modal.open {
-            display: flex; /* Show the modal */
+            display: flex;
+            /* Show the modal */
         }
 
         .modal-content {
@@ -274,7 +320,8 @@
         }
 
         .modal-content textarea {
-            resize: vertical; /* Allow vertical resizing */
+            resize: vertical;
+            /* Allow vertical resizing */
         }
 
         .modal-content button {
@@ -291,6 +338,7 @@
         .modal-content button:hover {
             background-color: rgb(46, 46, 46);
         }
+
         .modal-content .close-button {
             width: 50px;
             position: right;
@@ -304,21 +352,27 @@
 
         .modal-content .close-button:hover {
             color: #333;
-        }.edit-modal {
-            display: none; /* Hidden by default */
+        }
+
+        .edit-modal {
+            display: none;
+            /* Hidden by default */
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-            z-index: 1001; /* Ensure it appears above other content */
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent background */
+            z-index: 1001;
+            /* Ensure it appears above other content */
             justify-content: center;
             align-items: center;
         }
 
         .edit-modal.open {
-            display: flex; /* Show the modal */
+            display: flex;
+            /* Show the modal */
         }
 
         .edit-modal-content {
@@ -351,7 +405,8 @@
         }
 
         .edit-modal-content textarea {
-            resize: vertical; /* Allow vertical resizing */
+            resize: vertical;
+            /* Allow vertical resizing */
         }
 
         .edit-modal-content button {
@@ -420,7 +475,9 @@
             <button id="task-count-button">0 tasks selected</button>
         </div>
         <div class="right-buttons">
-            <button onclick="deleteSelectedTasks()">Delete</button>
+            @if(Auth::check() && (Auth::user()->Role_Value == 1))
+                <button onclick="deleteSelectedTasks()">Delete</button>
+            @endif
         </div>
     </div>
 
@@ -519,8 +576,10 @@
                                 <div class="task-date">${task.task_date}</div>
                             </div>
                             <div class="task-actions">
+                            @if(Auth::check() && (Auth::user()->Role_Value == 1 || Auth::user()->Role_Value == 2))
                                 <button onclick="openEditTaskModal(${task.id})"><i class="fas fa-edit"></i></button>
                                 <button onclick="deleteTask(${task.id})"><i class="fas fa-trash"></i></button>
+                            @endif
                             </div>
                         </li>
                     `).join("");
@@ -528,7 +587,9 @@
                     content.innerHTML = `
                         <div class="tasks-header">
                             <h2>Tasks</h2>
-                            <button onclick="openAddTaskModal()">Add Task</button>
+                            @if(Auth::check() && (Auth::user()->Role_Value == 1 || Auth::user()->Role_Value == 2 || Auth::user()->Role_Value == 3))
+                                <button onclick="openAddTaskModal()">Add Task</button>
+                            @endif
                         </div>
                         <ul class="task-list">
                             ${taskListHTML}

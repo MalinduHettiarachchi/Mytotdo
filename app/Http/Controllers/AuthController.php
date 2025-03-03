@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;  // Add this line to use Hash::check()
 use App\Models\User;
 
 class AuthController extends Controller
@@ -16,13 +17,12 @@ class AuthController extends Controller
             'role' => 'required|integer',
         ]);
 
-        if (
-            Auth::attempt([
-                'Email' => $request->email,
-                'Password' => $request->password,
-                'Role_Value' => $request->role,
-            ])
-        ) {
+        // Attempt login using email and password fields, and check the role
+        $user = User::where('email', $request->email)->first();  // Find user by email
+
+        if ($user && Hash::check($request->password, $user->Password) && $user->Role_Value == $request->role) {
+            Auth::login($user); // Log the user in
+
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful!',
@@ -30,7 +30,7 @@ class AuthController extends Controller
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid credentials.',
+                'message' => 'Invalid credentials or role.',
             ], 401); // Unauthorized status code
         }
     }
